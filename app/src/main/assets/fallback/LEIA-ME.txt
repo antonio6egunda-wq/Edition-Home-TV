@@ -1,0 +1,7 @@
+Imagens de fallback do Daily Photo
+==================================
+
+Coloque aqui de 3 a 5 imagens JPEG em 1280x720, com cerca de 150 KB cada.
+Elas são usadas quando não há internet e nenhuma imagem do dia foi salva.
+
+Se a pasta estiver vazia, o papel de parede volta para o degradê padrão.

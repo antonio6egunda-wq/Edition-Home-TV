@@ -1,0 +1,22 @@
+// Projeto raiz. Plugin do Android Gradle 3.6.x: última série que compila
+// com compileSdk 25 e roda com Gradle 5.6.x (JDK 8).
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.6.4'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

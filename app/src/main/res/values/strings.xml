@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Edition Home TV</string>
+    <string name="open_drawer">Abrir todos os aplicativos</string>
+    <string name="add_favorite">Adicionar</string>
+    <string name="drawer_empty">Nenhum aplicativo encontrado</string>
+
+    <!-- Menu de opções dos aplicativos -->
+    <string name="menu_edit">Editar</string>
+    <string name="menu_move">Mover</string>
+    <string name="menu_hide">Ocultar</string>
+    <string name="menu_show">Mostrar</string>
+    <string name="menu_show_hidden">Mostrar ocultos</string>
+    <string name="menu_hide_list">Ocultar ocultos</string>
+    <string name="menu_remove">Remover da dock</string>
+    <string name="menu_uninstall">Desinstalar</string>
+    <string name="menu_info">Informações</string>
+    <string name="menu_rename_title">Editar nome</string>
+    <string name="action_save">Salvar</string>
+    <string name="action_cancel">Cancelar</string>
+
+    <!-- Mensagens rápidas -->
+    <string name="toast_cannot_open">Não foi possível abrir o aplicativo</string>
+    <string name="toast_added">Adicionado à dock</string>
+    <string name="toast_full">A dock está cheia (máximo de 5)</string>
+    <string name="toast_move_hint">Use ← e → para mudar de posição e OK para confirmar</string>
+    <string name="toast_pick_hint">Escolha um aplicativo para a dock</string>
+    <string name="toast_already_in_dock">Este aplicativo já está na dock</string>
+
+    <!-- Tela inicial -->
+    <string name="greeting_morning">Bom dia</string>
+    <string name="greeting_afternoon">Boa tarde</string>
+    <string name="greeting_evening">Boa noite</string>
+
+    <string-array name="months">
+        <item>janeiro</item>
+        <item>fevereiro</item>
+        <item>março</item>
+        <item>abril</item>
+        <item>maio</item>
+        <item>junho</item>
+        <item>julho</item>
+        <item>agosto</item>
+        <item>setembro</item>
+        <item>outubro</item>
+        <item>novembro</item>
+        <item>dezembro</item>
+    </string-array>
+
+    <!-- Configurações: cabeçalho, seções e itens -->
+    <string name="settings_title">Configurações</string>
+    <string name="settings_subtitle">Conexão e aparelho</string>
+    <string name="back_label">‹  Voltar</string>
+    <string name="settings_device">Dispositivo</string>
+    <string name="settings_apps">Aplicativos</string>
+    <string name="settings_animation">Efeito de abertura</string>
+    <string name="settings_screensaver">Proteção de tela</string>
+    <string name="settings_more">Mais definições</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_datetime">Data e hora</string>
+
+    <!-- Status de conexão -->
+    <string name="indicator_wifi">Wi-Fi</string>
+    <string name="indicator_lan">LAN</string>
+    <string name="wifi_title_on">Ligado</string>
+    <string name="wifi_title_off">Desligado</string>
+    <string name="wifi_no_network">Sem rede</string>
+    <string name="wifi_toggle_on">Ligar Wi-Fi</string>
+    <string name="wifi_toggle_off">Desligar Wi-Fi</string>
+    <string name="wifi_networks">Redes disponíveis</string>
+    <string name="wifi_scanning">Procurando redes…</string>
+    <string name="wifi_secured">Protegida</string>
+    <string name="wifi_open">Aberta</string>
+    <string name="wifi_need_on">Ligue o Wi-Fi para ver as redes.</string>
+    <string name="wifi_need_location">Permita o acesso à localização para ver os nomes das redes.</string>
+    <string name="wifi_allow">Permitir localização</string>
+    <string name="wifi_refreshing">Atualizando redes…</string>
+    <string name="wifi_cannot_toggle">Não foi possível alterar o Wi-Fi neste aparelho</string>
+    <string name="lan_title_on">Conectado</string>
+    <string name="lan_title_off">Desconectado</string>
+    <string name="lan_sub_on">Cabo de rede ativo</string>
+    <string name="lan_sub_off">Nenhum cabo de rede</string>
+
+    <!-- Redes Wi-Fi: expandir, conectar, esquecer -->
+    <string name="net_connect">Conectar</string>
+    <string name="net_disconnect">Desconectar</string>
+    <string name="net_forget">Esquecer rede</string>
+    <string name="net_password_hint">Senha da rede</string>
+    <string name="net_show_password">Mostrar senha</string>
+    <string name="net_hide_password">Ocultar senha</string>
+    <string name="net_connecting">Conectando…</string>
+    <string name="net_forgotten">Rede esquecida</string>
+    <string name="net_error">Não foi possível conectar</string>
+    <string name="net_current">Conectado</string>
+
+    <!-- Dispositivo -->
+    <string name="dev_name">Nome</string>
+    <string name="dev_model">Modelo</string>
+    <string name="dev_android">Versão do Android</string>
+    <string name="dev_resolution">Resolução</string>
+    <string name="dev_ram">Memória RAM</string>
+    <string name="dev_storage">Armazenamento</string>
+    <string name="dev_build">Número da compilação</string>
+    <string name="dev_security">Nível de segurança</string>
+    <string name="dev_ip">Endereço IP</string>
+    <string name="dev_no_ip">Sem rede</string>
+    <string name="dev_unavailable">Não disponível</string>
+
+    <!-- Aplicativos -->
+    <string name="apps_hint">Toque em um aplicativo para ocultá-lo ou mostrá-lo na gaveta.</string>
+    <string name="apps_hidden">Oculto</string>
+
+    <!-- Tema -->
+    <string name="theme_mode">Modo</string>
+    <string name="theme_accent">Cor de destaque</string>
+    <string name="mode_dark">Escuro</string>
+    <string name="mode_light">Claro</string>
+    <string-array name="accent_names">
+        <item>Roxo</item>
+        <item>Azul</item>
+        <item>Ciano</item>
+        <item>Verde</item>
+        <item>Amarelo</item>
+        <item>Laranja</item>
+        <item>Rosa</item>
+        <item>Vermelho</item>
+    </string-array>
+
+    <!-- Papel de parede -->
+    <string name="wp_padrao">Padrão</string>
+    <string name="wp_colors">Cores de destaque</string>
+    <string name="wp_images">Imagens</string>
+    <string name="wp_daily">Daily photo</string>
+    <string name="wp_custom">My photo</string>
+    <string name="wp_add">Adicionar foto à galeria</string>
+    <string name="wp_gallery_count">%1$d na galeria</string>
+    <string-array name="palette_names">
+        <item>Noite</item>
+        <item>Oceano</item>
+        <item>Azul profundo</item>
+        <item>Vinho</item>
+        <item>Floresta</item>
+        <item>Ameixa</item>
+        <item>Ardósia</item>
+        <item>Âmbar</item>
+    </string-array>
+
+    <!-- Proteção de tela -->
+    <string name="ss_enable">Ativar proteção de tela</string>
+    <string name="ss_start_after">Iniciar após</string>
+    <string name="ss_minutes">%1$d min</string>
+    <string name="ss_content">Conteúdo</string>
+    <string name="ss_source_photos">Galeria de fotos</string>
+    <string name="ss_source_video">Vídeo de fundo</string>
+    <string name="ss_choose_video">Escolher vídeo</string>
+    <string name="ss_video_chosen">Vídeo escolhido</string>
+    <string name="ss_video_none">Nenhum vídeo escolhido</string>
+    <string name="ss_change_hint">As imagens da galeria mudam a cada 5 minutos.</string>
+
+    <!-- Efeito de abertura -->
+    <string name="anim_fade">Surgir</string>
+    <string name="anim_zoom">Zoom</string>
+    <string name="anim_slide">Deslizar</string>
+    <string name="anim_none">Nenhum</string>
+    <!-- Categorias confirmadas -->
+    <string name="settings_network">Rede</string>
+    <string name="settings_look">Papel de parede e proteção de tela</string>
+    <string name="settings_android">Configurações do Android</string>
+    <string name="net_location_settings">Abrir configurações de localização</string>
+
+    <!-- Seletor de arquivos -->
+    <string name="picker_title">Escolher arquivo</string>
+    <string name="picker_no_storage">Nenhum armazenamento encontrado. Conecte um pendrive ou use a memória interna.</string>
+    <string name="picker_empty">Nenhum arquivo compatível nesta pasta</string>
+    <string name="picker_internal">Armazenamento interno</string>
+    <string name="picker_usb">Pendrive ou USB: %1$s</string>
+    <string name="ss_video_invalid">Use um vídeo H.264 de até 720p</string>
+
+    <!-- Teclado virtual -->
+    <string name="kb_upper">ABC</string>
+    <string name="kb_lower">abc</string>
+    <string name="kb_letters">abc</string>
+    <string name="kb_numbers">123</string>
+    <string name="kb_delete">Apagar</string>
+    <string name="kb_space">Espaço</string>
+
+    <!-- Pílula de status -->
+    <string name="pill_network">Rede</string>
+    <string name="pill_toggle">Ligar ou desligar Wi-Fi</string>
+    <string name="pill_settings">Configurações</string>
+</resources>
