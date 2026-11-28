@@ -3,6 +3,7 @@ package com.edition.home;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 
 /** Preferências do launcher. Um único arquivo para tema, animação e proteção de tela. */
 public final class Prefs {
@@ -14,6 +15,7 @@ public final class Prefs {
     private static final String KEY_SS_ENABLED = "ss_enabled";
     private static final String KEY_SS_IDLE = "ss_idle_min";
     private static final String KEY_SS_SOURCE = "ss_source";
+    private static final String KEY_CLOCK24 = "clock_24h";
 
     /** Cores de destaque (mesma ordem de R.array.accent_names). */
     public static final int[] ACCENTS = {
@@ -66,7 +68,30 @@ public final class Prefs {
 
     /** Identifica a aparência atual; quando muda, as telas são recriadas. */
     public static String lookKey(Context c) {
-        return (isDark(c) ? "d" : "l") + themeIndex(c);
+        return (isDark(c) ? "d" : "l") + themeIndex(c) + java.util.Locale.getDefault().getLanguage();
+    }
+
+    /** Relógio da barra de status: true = 24 horas. */
+    public static boolean clock24(Context c) {
+        try {
+            String v = Settings.System.getString(c.getContentResolver(), Settings.System.TIME_12_24);
+            if (v != null) {
+                return "24".equals(v);
+            }
+        } catch (RuntimeException ignored) {
+            // Sem leitura: usa a preferência do próprio app.
+        }
+        return prefs(c).getBoolean(KEY_CLOCK24, true);
+    }
+
+    /** Grava o formato no sistema (precisa de WRITE_SETTINGS) e no app. */
+    public static void setClock24(Context c, boolean on) {
+        prefs(c).edit().putBoolean(KEY_CLOCK24, on).apply();
+        try {
+            Settings.System.putString(c.getContentResolver(), Settings.System.TIME_12_24, on ? "24" : "12");
+        } catch (SecurityException ignored) {
+            // Sem permissão de sistema: vale só para o relógio do app.
+        }
     }
 
     public static int openAnimation(Context c) {

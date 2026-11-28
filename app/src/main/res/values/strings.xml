@@ -51,7 +51,7 @@
     <string name="settings_title">Configurações</string>
     <string name="settings_subtitle">Conexão e aparelho</string>
     <string name="back_label">‹  Voltar</string>
-    <string name="settings_device">Dispositivo</string>
+    <string name="settings_device">Informações do dispositivo</string>
     <string name="settings_apps">Aplicativos</string>
     <string name="settings_animation">Efeito de abertura</string>
     <string name="settings_screensaver">Proteção de tela</string>
@@ -164,10 +164,33 @@
     <string name="anim_none">Nenhum</string>
     <!-- Categorias confirmadas -->
     <string name="settings_network">Rede</string>
-    <string name="settings_look">Papel de parede e proteção de tela</string>
+    <string name="settings_look">Wallpapers</string>
     <string name="settings_android">Configurações do Android</string>
     <string name="settings_theme">Tema</string>
-    <string name="wp_solid">Cor de destaque</string>
+    <string name="settings_keyboard">Entrada de teclado</string>
+    <string name="kb_setup">Configurar teclados</string>
+    <string name="lang_pt">Português</string>
+    <string name="lang_en">English</string>
+    <string name="dt_current">Ajustar</string>
+    <string name="dt_date">Data</string>
+    <string name="dt_time">Hora</string>
+    <string name="dt_timezone">Fuso horário</string>
+    <string name="dt_format">Formato</string>
+    <string name="dt_24h">Formato de 24 horas</string>
+    <string name="dt_adjust">Ajustar</string>
+    <string name="dt_adjust_row">Ajustar data e hora no Android</string>
+    <string name="dt_note">Ajustes de data, hora e fuso horário precisam de permissão de sistema. Instale o app como app de sistema no box.</string>
+    <string name="dt_zone_pick">Escolha o fuso horário</string>
+    <string name="sys_no_permission">Sem permissão. Instale o app como app de sistema no box.</string>
+    <string name="settings_storage">Armazenamento</string>
+    <string name="storage_ram">Memória RAM</string>
+    <string name="storage_total">Total</string>
+    <string name="storage_free">Livre</string>
+    <string name="storage_avail">Disponível</string>
+    <string name="storage_disks">Dispositivos de armazenamento</string>
+    <string name="storage_parts">Partições montadas</string>
+    <string name="storage_note">Valores lidos direto do kernel (/proc e leitura das partições), sem usar as informações do firmware.</string>
+    <string name="clock_date">%1$d de %2$s de %3$d</string>
     <string name="net_location_settings">Abrir configurações de localização</string>
 
     <!-- Seletor de arquivos -->

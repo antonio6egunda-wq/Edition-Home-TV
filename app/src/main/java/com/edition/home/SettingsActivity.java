@@ -73,8 +73,10 @@ public class SettingsActivity extends Activity {
     private static final int PAGE_NETWORK = 2;
     private static final int PAGE_APPS = 3;
     private static final int PAGE_LOOK = 4;
-    private static final int PAGE_ANDROID = 5;
     private static final int PAGE_THEME = 6;
+    private static final int PAGE_LANGUAGE = 7;
+    private static final int PAGE_DATETIME = 8;
+    private static final int PAGE_STORAGE = 9;
 
     private static final int IND_WIFI = 0;
     private static final int IND_LAN = 1;
@@ -395,10 +397,14 @@ public class SettingsActivity extends Activity {
                 return R.string.settings_apps;
             case PAGE_LOOK:
                 return R.string.settings_look;
-            case PAGE_ANDROID:
-                return R.string.settings_android;
             case PAGE_THEME:
                 return R.string.settings_theme;
+            case PAGE_LANGUAGE:
+                return R.string.settings_language;
+            case PAGE_DATETIME:
+                return R.string.settings_datetime;
+            case PAGE_STORAGE:
+                return R.string.settings_storage;
             default:
                 return R.string.settings_network;
         }
@@ -428,11 +434,17 @@ public class SettingsActivity extends Activity {
             case PAGE_LOOK:
                 buildLook();
                 break;
-            case PAGE_ANDROID:
-                buildAndroid();
-                break;
             case PAGE_THEME:
                 buildTheme();
+                break;
+            case PAGE_LANGUAGE:
+                buildLanguage();
+                break;
+            case PAGE_DATETIME:
+                buildDateTime();
+                break;
+            case PAGE_STORAGE:
+                buildStorage();
                 break;
             default:
                 break;
@@ -442,18 +454,24 @@ public class SettingsActivity extends Activity {
     // ---------------- Página principal ----------------
 
     private void buildRoot() {
-        menuRow(R.drawable.ic_display_settings, R.string.settings_device, R.string.settings_device, 0,
-                new Runnable() { @Override public void run() { showPage(PAGE_DEVICE); } });
         menuRow(R.drawable.ic_wifi_lock, R.string.settings_network, R.string.settings_network, 0,
                 new Runnable() { @Override public void run() { showPage(PAGE_NETWORK); } });
-        menuRow(R.drawable.ic_app, R.string.settings_apps, R.string.settings_apps, 0,
-                new Runnable() { @Override public void run() { showPage(PAGE_APPS); } });
+        menuRow(R.drawable.ic_palette, R.string.settings_theme, R.string.settings_theme, 0,
+                new Runnable() { @Override public void run() { showPage(PAGE_THEME); } });
         menuRow(R.drawable.ic_wallpaper, R.string.settings_look, R.string.settings_look, 0,
                 new Runnable() { @Override public void run() { showPage(PAGE_LOOK); } });
-        menuRow(R.drawable.ic_settings, R.string.settings_theme, R.string.settings_theme, 0,
-                new Runnable() { @Override public void run() { showPage(PAGE_THEME); } });
-        menuRow(R.drawable.ic_admin_panel_settings, R.string.settings_android, R.string.settings_android, 0,
-                new Runnable() { @Override public void run() { showPage(PAGE_ANDROID); } });
+        menuRow(R.drawable.ic_app, R.string.settings_apps, R.string.settings_apps, 0,
+                new Runnable() { @Override public void run() { showPage(PAGE_APPS); } });
+        menuRow(R.drawable.ic_language, R.string.settings_language, R.string.settings_language, 0,
+                new Runnable() { @Override public void run() { showPage(PAGE_LANGUAGE); } });
+        menuRow(R.drawable.ic_schedule, R.string.settings_datetime, R.string.settings_datetime, 0,
+                new Runnable() { @Override public void run() { showPage(PAGE_DATETIME); } });
+        menuRow(R.drawable.ic_info, R.string.settings_device, R.string.settings_device, 0,
+                new Runnable() { @Override public void run() { showPage(PAGE_DEVICE); } });
+        menuRow(R.drawable.ic_storage, R.string.settings_storage, R.string.settings_storage, 0,
+                new Runnable() { @Override public void run() { showPage(PAGE_STORAGE); } });
+        menuRow(R.drawable.ic_settings, R.string.settings_more, R.string.settings_more, 0,
+                new Runnable() { @Override public void run() { openSystem(Settings.ACTION_SETTINGS); } });
     }
 
     private void buildNetwork() {
@@ -479,13 +497,186 @@ public class SettingsActivity extends Activity {
     }
 
     /** Configurações do Android: idioma, data e hora, mais definições e o tema. */
-    private void buildAndroid() {
-        content.addView(row(R.drawable.ic_language, getString(R.string.settings_language), null, 0,
-                new Runnable() { @Override public void run() { openSystem(Settings.ACTION_LOCALE_SETTINGS); } }, 0), lp(ROW_GAP));
-        content.addView(row(R.drawable.ic_schedule, getString(R.string.settings_datetime), null, 0,
-                new Runnable() { @Override public void run() { openSystem(Settings.ACTION_DATE_SETTINGS); } }, 0), lp(ROW_GAP));
-        content.addView(row(R.drawable.ic_admin_panel_settings, getString(R.string.settings_more), null, 0,
-                new Runnable() { @Override public void run() { openSystem(Settings.ACTION_SETTINGS); } }, 0), lp(ROW_GAP));
+    /** Idioma do app e entrada de teclado. */
+    private void buildLanguage() {
+        String current = java.util.Locale.getDefault().getLanguage();
+        content.addView(label(R.string.settings_language), lp(8));
+        content.addView(languageRow("pt", R.string.lang_pt, current), lp(ROW_GAP));
+        content.addView(languageRow("en", R.string.lang_en, current), lp(ROW_GAP));
+
+        content.addView(label(R.string.settings_keyboard), lp(8));
+        content.addView(row(null, getString(R.string.kb_setup), null, 0, new Runnable() {
+            @Override
+            public void run() {
+                openSystem(Settings.ACTION_INPUT_METHOD_SETTINGS);
+            }
+        }, 0), lp(ROW_GAP));
+    }
+
+    private View languageRow(final String tag, int titleRes, String current) {
+        return row(null, getString(titleRes), null, tag.equals(current) ? R.drawable.ic_verified : 0,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (applySystemLanguage(tag)) {
+                            restorePage = PAGE_LANGUAGE;
+                            recreate();
+                        } else {
+                            toast(R.string.sys_no_permission);
+                        }
+                    }
+                }, 0);
+    }
+
+    /** Troca o idioma do sistema (Configuration persistente). Precisa de CHANGE_CONFIGURATION. */
+    private boolean applySystemLanguage(String tag) {
+        try {
+            Object am = Class.forName("android.app.ActivityManagerNative").getMethod("getDefault").invoke(null);
+            Class<?> iam = Class.forName("android.app.IActivityManager");
+            android.content.res.Configuration cfg =
+                    new android.content.res.Configuration(getResources().getConfiguration());
+            cfg.locale = new java.util.Locale(tag);
+            try {
+                iam.getMethod("updatePersistentConfiguration", android.content.res.Configuration.class)
+                        .invoke(am, cfg);
+            } catch (NoSuchMethodException e) {
+                iam.getMethod("updateConfiguration", android.content.res.Configuration.class).invoke(am, cfg);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** Data e hora: mostra o que está no aparelho e o formato de 12 ou 24 horas. */
+    private void buildDateTime() {
+        java.util.Locale loc = java.util.Locale.getDefault();
+        java.util.Date now = new java.util.Date();
+        boolean h24 = Prefs.clock24(this);
+
+        content.addView(label(R.string.dt_current), lp(8));
+        content.addView(row(null, getString(R.string.dt_date),
+                new java.text.SimpleDateFormat("dd/MM/yyyy", loc).format(now), 0,
+                new Runnable() { @Override public void run() { pickDate(); } }, 0), lp(ROW_GAP));
+        content.addView(row(null, getString(R.string.dt_time),
+                new java.text.SimpleDateFormat(h24 ? "HH:mm" : "h:mm a", loc).format(now), 0,
+                new Runnable() { @Override public void run() { pickTime(); } }, 0), lp(ROW_GAP));
+        content.addView(row(null, getString(R.string.dt_timezone),
+                java.util.TimeZone.getDefault().getDisplayName(false, java.util.TimeZone.LONG, loc), 0,
+                new Runnable() { @Override public void run() { pickZone(); } }, 0), lp(ROW_GAP));
+
+        content.addView(label(R.string.dt_format), lp(8));
+        content.addView(row(h24 ? R.drawable.ic_toggle_on : R.drawable.ic_toggle_off, getString(R.string.dt_24h),
+                null, 0, new Runnable() {
+                    @Override
+                    public void run() {
+                        Prefs.setClock24(SettingsActivity.this, !Prefs.clock24(SettingsActivity.this));
+                        rebuildSamePage();
+                    }
+                }, 0), lp(ROW_GAP));
+        content.addView(note(R.string.dt_note), lp(12));
+    }
+
+    /** Armazenamento e RAM lidos do kernel (RealStorage), sem valores do firmware. */
+    private void buildStorage() {
+        long[] mem = RealStorage.memory();
+        content.addView(label(R.string.storage_ram), lp(8));
+        addRaw(getString(R.string.storage_total), valueOr(RealStorage.formatBinary(mem[0])));
+        addRaw(getString(R.string.storage_avail), valueOr(RealStorage.formatBinary(mem[1])));
+
+        content.addView(label(R.string.storage_disks), lp(8));
+        java.util.List<RealStorage.Disk> disks = RealStorage.disks();
+        if (disks.isEmpty()) {
+            addRaw(getString(R.string.storage_disks), getString(R.string.dev_unavailable));
+        }
+        for (RealStorage.Disk d : disks) {
+            addRaw(d.name, valueOr(RealStorage.format(d.bytes)));
+        }
+
+        content.addView(label(R.string.storage_parts), lp(8));
+        for (RealStorage.Partition part : RealStorage.partitions()) {
+            addRaw(part.mount + "  " + getString(R.string.storage_total), valueOr(RealStorage.format(part.total)));
+            addRaw(part.mount + "  " + getString(R.string.storage_free), valueOr(RealStorage.format(part.free)));
+        }
+        content.addView(note(R.string.storage_note), lp(12));
+    }
+
+    private void addRaw(String title, String value) {
+        content.addView(row(null, title, value, 0, null, 0), lp(ROW_GAP));
+    }
+
+    private String valueOr(String value) {
+        return value != null ? value : getString(R.string.dev_unavailable);
+    }
+
+    private void pickDate() {
+        final java.util.Calendar c = java.util.Calendar.getInstance();
+        new android.app.DatePickerDialog(this, new android.app.DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(android.widget.DatePicker view, int y, int m, int d) {
+                java.util.Calendar n = java.util.Calendar.getInstance();
+                n.set(y, m, d, c.get(java.util.Calendar.HOUR_OF_DAY), c.get(java.util.Calendar.MINUTE), 0);
+                setSystemTime(n.getTimeInMillis());
+            }
+        }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH),
+                c.get(java.util.Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void pickTime() {
+        final java.util.Calendar c = java.util.Calendar.getInstance();
+        new android.app.TimePickerDialog(this, new android.app.TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(android.widget.TimePicker view, int hour, int minute) {
+                java.util.Calendar n = java.util.Calendar.getInstance();
+                n.set(c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH),
+                        c.get(java.util.Calendar.DAY_OF_MONTH), hour, minute, 0);
+                setSystemTime(n.getTimeInMillis());
+            }
+        }, c.get(java.util.Calendar.HOUR_OF_DAY), c.get(java.util.Calendar.MINUTE),
+                Prefs.clock24(this)).show();
+    }
+
+    private void setSystemTime(long millis) {
+        boolean ok;
+        try {
+            ok = android.os.SystemClock.setCurrentTimeMillis(millis);
+        } catch (SecurityException e) {
+            ok = false;
+        }
+        if (!ok) {
+            toast(R.string.sys_no_permission);
+        }
+        rebuildSamePage();
+    }
+
+    private void pickZone() {
+        final String[] ids = {
+                "America/Sao_Paulo", "America/Manaus", "America/Fortaleza", "America/Rio_Branco",
+                "Africa/Luanda", "Europe/Lisbon", "Europe/London", "America/New_York", "UTC"
+        };
+        java.util.Locale loc = java.util.Locale.getDefault();
+        String[] names = new String[ids.length];
+        for (int i = 0; i < ids.length; i++) {
+            names[i] = java.util.TimeZone.getTimeZone(ids[i]).getDisplayName(false, java.util.TimeZone.LONG, loc);
+        }
+        Design.dialog(this)
+                .setTitle(R.string.dt_zone_pick)
+                .setItems(names, new android.content.DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(android.content.DialogInterface d, int which) {
+                        setSystemTimeZone(ids[which]);
+                    }
+                })
+                .show();
+    }
+
+    private void setSystemTimeZone(String id) {
+        try {
+            ((android.app.AlarmManager) getSystemService(ALARM_SERVICE)).setTimeZone(id);
+        } catch (SecurityException e) {
+            toast(R.string.sys_no_permission);
+        }
+        rebuildSamePage();
     }
 
     private void menuRow(int iconRes, int titleRes, int sectionRes, int trailingRes, Runnable action) {
@@ -966,8 +1157,6 @@ public class SettingsActivity extends Activity {
         addInfo(R.string.dev_model, Build.MODEL);
         addInfo(R.string.dev_android, Build.VERSION.RELEASE);
         addInfo(R.string.dev_resolution, resolution());
-        addExpandable(R.string.dev_ram, memoryTotal());
-        addExpandable(R.string.dev_storage, storageTotal());
         addInfo(R.string.dev_build, Build.DISPLAY);
         addInfo(R.string.dev_security, securityPatch());
         addInfo(R.string.dev_ip, ipAddress() != null ? ipAddress() : getString(R.string.dev_no_ip));
@@ -1040,35 +1229,27 @@ public class SettingsActivity extends Activity {
     private void buildTheme() {
         content.addView(label(R.string.theme_mode), lp(8));
         boolean dark = Prefs.isDark(this);
-        LinearLayout modes = new LinearLayout(this);
-        modes.setOrientation(LinearLayout.HORIZONTAL);
-        modes.addView(modeCard(R.string.mode_dark, dark, true),
-                new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-        LinearLayout.LayoutParams gap = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        gap.leftMargin = Design.px(16);
-        modes.addView(modeCard(R.string.mode_light, !dark, false), gap);
+        LinearLayout modes = pairRow();
+        modes.addView(modeCard(R.drawable.ic_dark_mode, R.string.mode_dark, dark, true), cellLp(true, -1));
+        modes.addView(modeCard(R.drawable.ic_light_mode, R.string.mode_light, !dark, false), cellLp(false, -1));
         content.addView(modes, lp(ROW_GAP));
 
         content.addView(label(R.string.theme_accent), lp(8));
         String[] names = getResources().getStringArray(R.array.accent_names);
         int current = Prefs.themeIndex(this);
+        LinearLayout grid = null;
         for (int i = 0; i < names.length; i++) {
-            final int index = i;
-            content.addView(bannerRow(Wallpaper.colorDrawable(Prefs.ACCENTS[i]), names[i], i == current,
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            Prefs.setThemeIndex(SettingsActivity.this, index);
-                            restorePage = PAGE_THEME;
-                            recreate();
-                        }
-                    }), lp(ROW_GAP));
+            if (i % 4 == 0) {
+                grid = pairRow();
+                content.addView(grid, lp(ROW_GAP));
+            }
+            grid.addView(accentCircle(Prefs.ACCENTS[i], names[i], i == current, i), cellLp(i % 4 == 0, -1));
         }
     }
 
     /** Cartão de modo (Escuro ou Claro) com check no selecionado. */
-    private View modeCard(int titleRes, boolean selected, final boolean dark) {
-        return row(null, getString(titleRes), null, selected ? R.drawable.ic_verified : 0, new Runnable() {
+    private View modeCard(int iconRes, int titleRes, boolean selected, final boolean dark) {
+        return row(iconRes, getString(titleRes), null, selected ? R.drawable.ic_verified : 0, new Runnable() {
             @Override
             public void run() {
                 Prefs.setDark(SettingsActivity.this, dark);
@@ -1078,58 +1259,200 @@ public class SettingsActivity extends Activity {
         }, 0);
     }
 
+    /** Círculo de cor de destaque com nome embaixo. Escolher reinicia a tela com a nova cor. */
+    private View accentCircle(int color, String name, boolean selected, final int index) {
+        final LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setGravity(Gravity.CENTER_HORIZONTAL);
+        col.setPadding(0, Design.px(6), 0, Design.px(6));
+        col.setFocusable(true);
+        col.setClickable(true);
+
+        FrameLayout circle = new FrameLayout(this);
+        View fill = new View(this);
+        fill.setBackground(Design.oval(color));
+        circle.addView(fill, new FrameLayout.LayoutParams(Design.px(68), Design.px(68), Gravity.CENTER));
+        final View ring = new View(this);
+        GradientDrawable ringBg = Design.oval(0x00000000);
+        ringBg.setStroke(Math.max(1, Design.px(3)), Design.ACCENT);
+        ring.setBackground(ringBg);
+        ring.setVisibility(View.GONE);
+        circle.addView(ring, new FrameLayout.LayoutParams(Design.px(84), Design.px(84), Gravity.CENTER));
+        if (selected) {
+            ImageView check = new ImageView(this);
+            check.setImageResource(R.drawable.ic_verified);
+            check.setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.SRC_IN);
+            circle.addView(check, new FrameLayout.LayoutParams(Design.px(30), Design.px(30), Gravity.CENTER));
+        }
+        col.addView(circle, new LinearLayout.LayoutParams(Design.px(84), Design.px(84)));
+
+        TextView caption = text(name, Design.TEXT, 18, Design.FONT_INTER_MEDIUM);
+        caption.setGravity(Gravity.CENTER_HORIZONTAL);
+        caption.setSingleLine(true);
+        col.addView(caption, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        col.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                ring.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
+            }
+        });
+        col.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Prefs.setThemeIndex(SettingsActivity.this, index);
+                restorePage = PAGE_THEME;
+                recreate();
+            }
+        });
+        return col;
+    }
+
+    private LinearLayout pairRow() {
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.HORIZONTAL);
+        return l;
+    }
+
+    /** Célula de uma linha de cards; h em px de desenho, -1 = altura do conteúdo. */
+    private LinearLayout.LayoutParams cellLp(boolean first, float designH) {
+        int h = designH < 0 ? LinearLayout.LayoutParams.WRAP_CONTENT : Design.px(designH);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, h, 1f);
+        if (!first) {
+            p.leftMargin = Design.px(16);
+        }
+        return p;
+    }
+
+    /**
+     * Card com imagem (ou fundo) e legenda embaixo. Foco mostra o contorno de destaque;
+     * selecionado mostra um check no canto. showAdd mostra o sinal de + (sem foto).
+     */
+    private FrameLayout tile(android.graphics.Bitmap bmp, Drawable bg, String name, float textSize,
+                             boolean selected, boolean showAdd, final Runnable action) {
+        final FrameLayout card = new FrameLayout(this);
+        card.setClipToOutline(true);
+        card.setOutlineProvider(new android.view.ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, android.graphics.Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), Design.px(18));
+            }
+        });
+        if (bmp != null) {
+            ImageView image = new ImageView(this);
+            image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            image.setImageBitmap(bmp);
+            card.addView(image, new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        } else if (bg != null) {
+            card.setBackground(bg);
+        } else {
+            card.setBackgroundColor(Design.GLASS);
+        }
+        if (showAdd) {
+            ImageView add = new ImageView(this);
+            add.setImageResource(R.drawable.ic_menu_plus);
+            add.setColorFilter(Design.TEXT_DIM, android.graphics.PorterDuff.Mode.SRC_IN);
+            card.addView(add, new FrameLayout.LayoutParams(Design.px(44), Design.px(44), Gravity.CENTER));
+        }
+
+        TextView caption = text(name, 0xFFFFFFFF, textSize, Design.FONT_INTER_SEMIBOLD);
+        caption.setSingleLine(true);
+        caption.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        caption.setPadding(Design.px(8), Design.px(3), Design.px(8), Design.px(3));
+        caption.setBackground(Design.rect(0xA6000000, 10));
+        FrameLayout.LayoutParams clp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
+        clp.setMargins(Design.px(8), 0, Design.px(8), Design.px(8));
+        card.addView(caption, clp);
+
+        if (selected) {
+            ImageView check = new ImageView(this);
+            check.setImageResource(R.drawable.ic_verified);
+            check.setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.SRC_IN);
+            check.setPadding(Design.px(5), Design.px(5), Design.px(5), Design.px(5));
+            check.setBackground(Design.oval(0xCC000000));
+            FrameLayout.LayoutParams chk = new FrameLayout.LayoutParams(
+                    Design.px(32), Design.px(32), Gravity.TOP | Gravity.END);
+            chk.setMargins(0, Design.px(8), Design.px(8), 0);
+            card.addView(check, chk);
+        }
+
+        final View ring = new View(this);
+        GradientDrawable ringBg = Design.rect(0x00000000, 18);
+        ringBg.setStroke(Math.max(1, Design.px(3)), Design.ACCENT);
+        ring.setBackground(ringBg);
+        ring.setVisibility(View.GONE);
+        card.addView(ring, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
+        card.setFocusable(true);
+        card.setClickable(true);
+        card.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                ring.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
+            }
+        });
+        card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action.run();
+            }
+        });
+        return card;
+    }
+
     private void buildWallpaper() {
         String mode = Wallpaper.mode(this);
         int index = Wallpaper.index(this);
         String[] palettes = getResources().getStringArray(R.array.palette_names);
 
         content.addView(label(R.string.wp_padrao), lp(8));
+        LinearLayout grid = null;
         for (int i = 0; i < palettes.length; i++) {
+            if (i % 4 == 0) {
+                grid = pairRow();
+                content.addView(grid, lp(ROW_GAP));
+            }
             final int p = i;
             boolean selected = Wallpaper.MODE_PALETTE.equals(mode) && index == i;
-            content.addView(bannerRow(Wallpaper.paletteDrawable(i), palettes[i], selected, new Runnable() {
-                @Override
-                public void run() {
-                    Wallpaper.setPalette(SettingsActivity.this, p);
-                    rebuildSamePage();
-                }
-            }), lp(ROW_GAP));
+            grid.addView(tile(null, Wallpaper.paletteDrawable(i), palettes[i], 16, selected, false,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            Wallpaper.setPalette(SettingsActivity.this, p);
+                            rebuildSamePage();
+                        }
+                    }), cellLp(i % 4 == 0, 72));
         }
 
-        // Cor sólida: usa a cor de destaque escolhida em Tema (não repete a lista de cores).
-        content.addView(label(R.string.wp_colors), lp(8));
-        content.addView(bannerRow(Wallpaper.colorDrawable(Prefs.accentColor(this)),
-                getString(R.string.wp_solid), Wallpaper.MODE_COLOR.equals(mode), new Runnable() {
-                    @Override
-                    public void run() {
-                        Wallpaper.setColor(SettingsActivity.this, Prefs.themeIndex(SettingsActivity.this));
-                        rebuildSamePage();
-                    }
-                }), lp(ROW_GAP));
-
         content.addView(label(R.string.wp_images), lp(8));
-        content.addView(row(null, getString(R.string.wp_daily), null,
-                Wallpaper.MODE_DAILY.equals(mode) ? R.drawable.ic_verified : 0, new Runnable() {
+        LinearLayout photos = pairRow();
+        android.net.Uri daily = Wallpaper.dailyUri(this);
+        android.graphics.Bitmap dailyBmp = daily == null ? null : Wallpaper.decode(this, daily, 320, 180);
+        photos.addView(tile(dailyBmp, dailyBmp == null ? Wallpaper.paletteDrawable(0) : null,
+                getString(R.string.wp_daily), 18, Wallpaper.MODE_DAILY.equals(mode), false,
+                new Runnable() {
                     @Override
                     public void run() {
                         Wallpaper.setDaily(SettingsActivity.this);
                         rebuildSamePage();
                     }
-                }, 0), lp(ROW_GAP));
-        content.addView(row(null, getString(R.string.wp_custom), null,
-                Wallpaper.MODE_CUSTOM.equals(mode) ? R.drawable.ic_verified : 0, new Runnable() {
+                }), cellLp(true, 124));
+
+        android.net.Uri custom = Wallpaper.customUri(this);
+        android.graphics.Bitmap customBmp = custom == null ? null : Wallpaper.decode(this, custom, 320, 180);
+        photos.addView(tile(customBmp, null, getString(R.string.wp_custom), 18,
+                Wallpaper.MODE_CUSTOM.equals(mode), customBmp == null,
+                new Runnable() {
                     @Override
                     public void run() {
                         Wallpaper.pickCustom(SettingsActivity.this);
                     }
-                }, 0), lp(ROW_GAP));
-        content.addView(row(R.drawable.ic_menu_plus, getString(R.string.wp_add), null, 0, new Runnable() {
-            @Override
-            public void run() {
-                Screensaver.pickGalleryPhoto(SettingsActivity.this);
-            }
-        }, 0), lp(ROW_GAP));
-        content.addView(note(getString(R.string.wp_gallery_count, Screensaver.gallery(this).size())), lp(ROW_GAP));
+                }), cellLp(false, 124));
+        content.addView(photos, lp(ROW_GAP));
     }
 
     private void buildScreensaver() {
@@ -1476,22 +1799,6 @@ public class SettingsActivity extends Activity {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getRealMetrics(dm);
         return dm.widthPixels + " × " + dm.heightPixels;
-    }
-
-    private String memoryTotal() {
-        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
-        am.getMemoryInfo(mi);
-        return gigabytes(mi.totalMem);
-    }
-
-    private String storageTotal() {
-        try {
-            StatFs stat = new StatFs(Environment.getDataDirectory().getPath());
-            return gigabytes(stat.getBlockCountLong() * stat.getBlockSizeLong());
-        } catch (RuntimeException e) {
-            return getString(R.string.dev_unavailable);
-        }
     }
 
     private String gigabytes(long bytes) {

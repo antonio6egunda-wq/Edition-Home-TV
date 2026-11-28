@@ -171,10 +171,16 @@ public final class StatusBar {
     private void updateClock() {
         Calendar cal = Calendar.getInstance();
         String[] months = activity.getResources().getStringArray(R.array.months);
-        String time = String.format(Locale.US, "%02d:%02d",
-                cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
-        String date = String.format(Locale.US, "%d de %s de %d",
-                cal.get(Calendar.DAY_OF_MONTH), months[cal.get(Calendar.MONTH)], cal.get(Calendar.YEAR));
+        String time;
+        if (Prefs.clock24(activity)) {
+            time = String.format(Locale.US, "%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+        } else {
+            int h = cal.get(Calendar.HOUR) == 0 ? 12 : cal.get(Calendar.HOUR);
+            time = String.format(Locale.US, "%d:%02d %s", h, cal.get(Calendar.MINUTE),
+                    cal.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
+        }
+        String date = activity.getString(R.string.clock_date, cal.get(Calendar.DAY_OF_MONTH),
+                months[cal.get(Calendar.MONTH)], cal.get(Calendar.YEAR));
         String full = time + "   " + date;
 
         SpannableString text = new SpannableString(full);

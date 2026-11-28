@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Edition Home TV</string>
+    <string name="open_drawer">Open all apps</string>
+    <string name="add_favorite">Add</string>
+    <string name="drawer_empty">No apps found</string>
+
+    <string name="menu_edit">Edit</string>
+    <string name="menu_move">Move</string>
+    <string name="menu_hide">Hide</string>
+    <string name="menu_show">Show</string>
+    <string name="menu_show_hidden">Show hidden</string>
+    <string name="menu_hide_list">Hide hidden</string>
+    <string name="menu_remove">Remove from dock</string>
+    <string name="menu_uninstall">Uninstall</string>
+    <string name="menu_info">Information</string>
+    <string name="menu_rename_title">Edit name</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="clock_date">%2$s %1$d, %3$d</string>
+
+    <string-array name="months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Connection and device</string>
+    <string name="back_label">‹  Back</string>
+    <string name="settings_device">Device information</string>
+    <string name="settings_apps">Apps</string>
+    <string name="settings_animation">Opening effect</string>
+    <string name="settings_screensaver">Screensaver</string>
+    <string name="settings_more">More settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_datetime">Date and time</string>
+    <string name="settings_network">Network</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_look">Wallpapers</string>
+    <string name="settings_keyboard">Keyboard input</string>
+    <string name="kb_setup">Set up keyboards</string>
+    <string name="lang_pt">Português</string>
+    <string name="lang_en">English</string>
+
+    <string name="dt_current">Adjust</string>
+    <string name="dt_date">Date</string>
+    <string name="dt_time">Time</string>
+    <string name="dt_timezone">Time zone</string>
+    <string name="dt_format">Format</string>
+    <string name="dt_24h">24-hour format</string>
+    <string name="dt_adjust">Adjust</string>
+    <string name="dt_adjust_row">Adjust date and time in Android</string>
+    <string name="dt_note">Date, time and time zone changes need system permission. Install the app as a system app on the box.</string>
+
+    <string name="theme_mode">Mode</string>
+    <string name="theme_accent">Accent color</string>
+    <string name="mode_dark">Dark</string>
+    <string name="mode_light">Light</string>
+    <string-array name="accent_names">
+        <item>Purple</item>
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>Green</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Pink</item>
+        <item>Red</item>
+    </string-array>
+
+    <string name="wp_padrao">Default</string>
+    <string name="wp_images">Photos</string>
+    <string name="wp_daily">Daily photo</string>
+    <string name="wp_custom">My photo</string>
+    <string name="wp_add">Add photo to gallery</string>
+    <string-array name="palette_names">
+        <item>Night</item>
+        <item>Ocean</item>
+        <item>Deep blue</item>
+        <item>Wine</item>
+        <item>Forest</item>
+        <item>Plum</item>
+        <item>Slate</item>
+        <item>Amber</item>
+    </string-array>
+
+    <string name="ss_enable">Enable screensaver</string>
+    <string name="ss_start_after">Start after</string>
+    <string name="ss_minutes">%1$d min</string>
+    <string name="ss_content">Content</string>
+    <string name="ss_source_photos">Photo gallery</string>
+    <string name="ss_source_video">Background video</string>
+    <string name="ss_choose_video">Choose video</string>
+    <string name="ss_change_hint">Gallery photos change every 5 minutes.</string>
+
+    <string name="anim_fade">Fade in</string>
+    <string name="anim_zoom">Zoom</string>
+    <string name="anim_slide">Slide</string>
+    <string name="anim_none">None</string>
+
+    <string name="dt_zone_pick">Choose the time zone</string>
+    <string name="sys_no_permission">No permission. Install the app as a system app on the box.</string>
+
+    <string name="settings_storage">Storage</string>
+    <string name="storage_ram">RAM</string>
+    <string name="storage_total">Total</string>
+    <string name="storage_free">Free</string>
+    <string name="storage_avail">Available</string>
+    <string name="storage_disks">Storage devices</string>
+    <string name="storage_parts">Mounted partitions</string>
+    <string name="storage_note">Values read directly from the kernel (/proc and partition stats), without using the firmware reports.</string>
+
+    <plurals name="apps_count">
+        <item quantity="one">%d app</item>
+        <item quantity="other">%d apps</item>
+    </plurals>
+</resources>

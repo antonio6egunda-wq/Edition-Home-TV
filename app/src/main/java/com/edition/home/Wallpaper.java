@@ -104,6 +104,12 @@ public final class Wallpaper {
         return s == null ? null : Uri.parse(s);
     }
 
+    /** Uri da imagem do dia mais recente baixada, para mostrar o cartão. Null se não houver. */
+    public static Uri dailyUri(Context c) {
+        File f = newestDailyFile(c);
+        return f == null ? null : Uri.fromFile(f);
+    }
+
     /** Verdadeiro quando a imagem do dia ainda não foi baixada hoje. */
     public static boolean needsRefresh(Context c) {
         return MODE_DAILY.equals(mode(c)) && !today().equals(prefs(c).getString(KEY_SHOWN_DAY, ""));
