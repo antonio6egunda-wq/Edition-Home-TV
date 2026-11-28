@@ -53,7 +53,6 @@ public final class StatusBar {
     private final TextView greeting;
     private final ImageView netIcon;
     private final TextView netCaption;
-    private final ImageView toggleIcon;
     private boolean registered;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -65,9 +64,7 @@ public final class StatusBar {
 
     /**
      * Pílula: três partes independentes.
-     * Rede: Wi-Fi liga/desliga o Wi-Fi; LAN abre a aba Rede.
-     * Liga/desliga: alterna o Wi-Fi.
-     * Engrenagem: abre as Configurações.
+     * Um único botão com o ícone de rede. Clicar abre a aba Rede das Configurações.
      */
     public StatusBar(final Activity activity, FrameLayout root) {
         this.activity = activity;
@@ -99,23 +96,19 @@ public final class StatusBar {
         wifiPart.setOrientation(LinearLayout.VERTICAL);
         wifiPart.setGravity(Gravity.CENTER);
 
+        // Só o ícone de rede (Wi-Fi, LAN ou sem rede), centralizado e legível a distância.
         FrameLayout stack = new FrameLayout(activity);
-        toggleIcon = new ImageView(activity);
-        stack.addView(toggleIcon, new FrameLayout.LayoutParams(Design.px(56), Design.px(40), Gravity.CENTER));
         netIcon = new ImageView(activity);
-        // Ícone de rede no lado esquerdo do toggle, por cima dele.
-        FrameLayout.LayoutParams netLp = new FrameLayout.LayoutParams(Design.px(26), Design.px(26), Gravity.START | Gravity.CENTER_VERTICAL);
-        netLp.leftMargin = Design.px(2);
-        stack.addView(netIcon, netLp);
+        stack.addView(netIcon, new FrameLayout.LayoutParams(Design.px(44), Design.px(44), Gravity.CENTER));
         netCaption = caption();
-        wifiPart.addView(stack, new LinearLayout.LayoutParams(Design.px(56), Design.px(40)));
+        wifiPart.addView(stack, new LinearLayout.LayoutParams(Design.px(72), Design.px(48)));
         wifiPart.addView(netCaption, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
         wifiPart.setContentDescription(activity.getString(R.string.pill_toggle));
         wifiPart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SettingsActivity.openAt(activity, false);
+                SettingsActivity.openAt(activity, true);
             }
         });
         pill.addView(part(wifiPart, 144), new LinearLayout.LayoutParams(Design.px(144), LinearLayout.LayoutParams.MATCH_PARENT));
@@ -228,9 +221,6 @@ public final class StatusBar {
             netCaption.setText(R.string.wifi_no_network);
         }
         netIcon.setColorFilter(Design.HOME_TEXT, PorterDuff.Mode.SRC_IN);
-
-        toggleIcon.setImageResource(wifiOn ? R.drawable.ic_toggle_on : R.drawable.ic_toggle_off);
-        toggleIcon.setColorFilter(wifiOn ? Design.ACCENT : Design.HOME_TEXT_DIM, PorterDuff.Mode.SRC_IN);
     }
 
     private int wifiBarsRes() {

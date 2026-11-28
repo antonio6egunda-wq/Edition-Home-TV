@@ -74,6 +74,7 @@ public class SettingsActivity extends Activity {
     private static final int PAGE_APPS = 3;
     private static final int PAGE_LOOK = 4;
     private static final int PAGE_ANDROID = 5;
+    private static final int PAGE_THEME = 6;
 
     private static final int IND_WIFI = 0;
     private static final int IND_LAN = 1;
@@ -396,6 +397,8 @@ public class SettingsActivity extends Activity {
                 return R.string.settings_look;
             case PAGE_ANDROID:
                 return R.string.settings_android;
+            case PAGE_THEME:
+                return R.string.settings_theme;
             default:
                 return R.string.settings_network;
         }
@@ -428,6 +431,9 @@ public class SettingsActivity extends Activity {
             case PAGE_ANDROID:
                 buildAndroid();
                 break;
+            case PAGE_THEME:
+                buildTheme();
+                break;
             default:
                 break;
         }
@@ -444,6 +450,8 @@ public class SettingsActivity extends Activity {
                 new Runnable() { @Override public void run() { showPage(PAGE_APPS); } });
         menuRow(R.drawable.ic_wallpaper, R.string.settings_look, R.string.settings_look, 0,
                 new Runnable() { @Override public void run() { showPage(PAGE_LOOK); } });
+        menuRow(R.drawable.ic_settings, R.string.settings_theme, R.string.settings_theme, 0,
+                new Runnable() { @Override public void run() { showPage(PAGE_THEME); } });
         menuRow(R.drawable.ic_admin_panel_settings, R.string.settings_android, R.string.settings_android, 0,
                 new Runnable() { @Override public void run() { showPage(PAGE_ANDROID); } });
     }
@@ -478,7 +486,6 @@ public class SettingsActivity extends Activity {
                 new Runnable() { @Override public void run() { openSystem(Settings.ACTION_DATE_SETTINGS); } }, 0), lp(ROW_GAP));
         content.addView(row(R.drawable.ic_admin_panel_settings, getString(R.string.settings_more), null, 0,
                 new Runnable() { @Override public void run() { openSystem(Settings.ACTION_SETTINGS); } }, 0), lp(ROW_GAP));
-        buildTheme();
     }
 
     private void menuRow(int iconRes, int titleRes, int sectionRes, int trailingRes, Runnable action) {
@@ -1029,10 +1036,18 @@ public class SettingsActivity extends Activity {
                 }, 0), lp(ROW_GAP));
     }
 
+    /** Categoria Tema: modo claro/escuro e cor de destaque (única lista de cores do app). */
     private void buildTheme() {
         content.addView(label(R.string.theme_mode), lp(8));
-        modeRow(R.string.mode_dark, Prefs.isDark(this), true);
-        modeRow(R.string.mode_light, !Prefs.isDark(this), false);
+        boolean dark = Prefs.isDark(this);
+        LinearLayout modes = new LinearLayout(this);
+        modes.setOrientation(LinearLayout.HORIZONTAL);
+        modes.addView(modeCard(R.string.mode_dark, dark, true),
+                new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        LinearLayout.LayoutParams gap = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        gap.leftMargin = Design.px(16);
+        modes.addView(modeCard(R.string.mode_light, !dark, false), gap);
+        content.addView(modes, lp(ROW_GAP));
 
         content.addView(label(R.string.theme_accent), lp(8));
         String[] names = getResources().getStringArray(R.array.accent_names);
@@ -1044,23 +1059,23 @@ public class SettingsActivity extends Activity {
                         @Override
                         public void run() {
                             Prefs.setThemeIndex(SettingsActivity.this, index);
-                            restorePage = PAGE_ANDROID;
+                            restorePage = PAGE_THEME;
                             recreate();
                         }
                     }), lp(ROW_GAP));
         }
     }
 
-    private void modeRow(int titleRes, boolean selected, final boolean dark) {
-        content.addView(row(null, getString(titleRes), null,
-                selected ? R.drawable.ic_verified : 0, new Runnable() {
-                    @Override
-                    public void run() {
-                        Prefs.setDark(SettingsActivity.this, dark);
-                        restorePage = PAGE_ANDROID;
-                        recreate();
-                    }
-                }, 0), lp(ROW_GAP));
+    /** Cartão de modo (Escuro ou Claro) com check no selecionado. */
+    private View modeCard(int titleRes, boolean selected, final boolean dark) {
+        return row(null, getString(titleRes), null, selected ? R.drawable.ic_verified : 0, new Runnable() {
+            @Override
+            public void run() {
+                Prefs.setDark(SettingsActivity.this, dark);
+                restorePage = PAGE_THEME;
+                recreate();
+            }
+        }, 0);
     }
 
     private void buildWallpaper() {
@@ -1081,19 +1096,16 @@ public class SettingsActivity extends Activity {
             }), lp(ROW_GAP));
         }
 
+        // Cor sólida: usa a cor de destaque escolhida em Tema (não repete a lista de cores).
         content.addView(label(R.string.wp_colors), lp(8));
-        String[] accents = getResources().getStringArray(R.array.accent_names);
-        for (int i = 0; i < accents.length; i++) {
-            final int c = i;
-            boolean selected = Wallpaper.MODE_COLOR.equals(mode) && index == i;
-            content.addView(bannerRow(Wallpaper.colorDrawable(Prefs.ACCENTS[i]), accents[i], selected, new Runnable() {
-                @Override
-                public void run() {
-                    Wallpaper.setColor(SettingsActivity.this, c);
-                    rebuildSamePage();
-                }
-            }), lp(ROW_GAP));
-        }
+        content.addView(bannerRow(Wallpaper.colorDrawable(Prefs.accentColor(this)),
+                getString(R.string.wp_solid), Wallpaper.MODE_COLOR.equals(mode), new Runnable() {
+                    @Override
+                    public void run() {
+                        Wallpaper.setColor(SettingsActivity.this, Prefs.themeIndex(SettingsActivity.this));
+                        rebuildSamePage();
+                    }
+                }), lp(ROW_GAP));
 
         content.addView(label(R.string.wp_images), lp(8));
         content.addView(row(null, getString(R.string.wp_daily), null,

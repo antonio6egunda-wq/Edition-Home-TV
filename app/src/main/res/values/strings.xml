@@ -166,6 +166,8 @@
     <string name="settings_network">Rede</string>
     <string name="settings_look">Papel de parede e proteção de tela</string>
     <string name="settings_android">Configurações do Android</string>
+    <string name="settings_theme">Tema</string>
+    <string name="wp_solid">Cor de destaque</string>
     <string name="net_location_settings">Abrir configurações de localização</string>
 
     <!-- Seletor de arquivos -->
