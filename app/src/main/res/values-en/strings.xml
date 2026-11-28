@@ -123,6 +123,13 @@
     <string name="storage_parts">Mounted partitions</string>
     <string name="storage_note">Values read directly from the kernel (/proc and partition stats), without using the firmware reports.</string>
 
+    <string name="storage_device">Device storage</string>
+    <string name="storage_used_of">%1$s used of %2$s</string>
+    <string name="storage_legend_system">System</string>
+    <string name="storage_legend_used">sdcard/0</string>
+    <string name="storage_legend_free">Remaining</string>
+    <string name="storage_legend_ram">Used</string>
+
     <plurals name="apps_count">
         <item quantity="one">%d app</item>
         <item quantity="other">%d apps</item>

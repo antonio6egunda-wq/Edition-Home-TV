@@ -78,6 +78,11 @@ public class SettingsActivity extends Activity {
     private static final int PAGE_DATETIME = 8;
     private static final int PAGE_STORAGE = 9;
 
+    private static final int COLOR_SYSTEM = 0xFF9CA3AF;
+    private static final int COLOR_USED = 0xFF3B82F6;
+    private static final int COLOR_FREE = 0xFFFFFFFF;
+    private static final int COLOR_RAM_USED = 0xFFEF4444;
+
     private static final int IND_WIFI = 0;
     private static final int IND_LAN = 1;
 
@@ -579,34 +584,105 @@ public class SettingsActivity extends Activity {
 
     /** Armazenamento e RAM lidos do kernel (RealStorage), sem valores do firmware. */
     private void buildStorage() {
-        long[] mem = RealStorage.memory();
+        content.addView(label(R.string.storage_device), lp(8));
+        long[] st = RealStorage.internalUsage(android.os.Environment.getExternalStorageDirectory().getAbsolutePath());
+        if (st[0] <= 0) {
+            content.addView(row(null, getString(R.string.storage_device),
+                    getString(R.string.dev_unavailable), 0, null, 0), lp(ROW_GAP));
+        } else {
+            long total = st[0];
+            long used = st[1];
+            long sdcard = st[2];
+            long system = used - sdcard;
+            int pct = Math.round(used * 100f / total);
+            UsageBar bar = new UsageBar(this);
+            bar.setSegments(new float[]{system / (float) total, sdcard / (float) total},
+                    new int[]{COLOR_SYSTEM, COLOR_USED});
+            content.addView(usageCard(
+                    getString(R.string.storage_used_of, RealStorage.gb(used, false, 1), RealStorage.gb(total, false, 0)),
+                    pct, bar,
+                    new String[]{
+                            RealStorage.human(system, false) + "  " + getString(R.string.storage_legend_system),
+                            RealStorage.human(sdcard, false) + "  " + getString(R.string.storage_legend_used),
+                            RealStorage.human(total - used, false) + "  " + getString(R.string.storage_legend_free)},
+                    new int[]{COLOR_SYSTEM, COLOR_USED, COLOR_FREE}), lp(ROW_GAP));
+        }
+
         content.addView(label(R.string.storage_ram), lp(8));
-        addRaw(getString(R.string.storage_total), valueOr(RealStorage.formatBinary(mem[0])));
-        addRaw(getString(R.string.storage_avail), valueOr(RealStorage.formatBinary(mem[1])));
-
-        content.addView(label(R.string.storage_disks), lp(8));
-        java.util.List<RealStorage.Disk> disks = RealStorage.disks();
-        if (disks.isEmpty()) {
-            addRaw(getString(R.string.storage_disks), getString(R.string.dev_unavailable));
-        }
-        for (RealStorage.Disk d : disks) {
-            addRaw(d.name, valueOr(RealStorage.format(d.bytes)));
-        }
-
-        content.addView(label(R.string.storage_parts), lp(8));
-        for (RealStorage.Partition part : RealStorage.partitions()) {
-            addRaw(part.mount + "  " + getString(R.string.storage_total), valueOr(RealStorage.format(part.total)));
-            addRaw(part.mount + "  " + getString(R.string.storage_free), valueOr(RealStorage.format(part.free)));
+        long[] mem = RealStorage.memory();
+        if (mem[0] <= 0) {
+            content.addView(row(null, getString(R.string.storage_ram),
+                    getString(R.string.dev_unavailable), 0, null, 0), lp(ROW_GAP));
+        } else {
+            long total = mem[0];
+            long used = mem[0] - mem[1];
+            int pct = Math.round(used * 100f / total);
+            UsageBar bar = new UsageBar(this);
+            bar.setSegments(new float[]{used / (float) total}, new int[]{COLOR_RAM_USED});
+            content.addView(usageCard(
+                    getString(R.string.storage_used_of, RealStorage.gb(used, true, 1), RealStorage.gb(total, true, 0)),
+                    pct, bar,
+                    new String[]{
+                            RealStorage.human(used, true) + "  " + getString(R.string.storage_legend_ram),
+                            RealStorage.human(mem[1], true) + "  " + getString(R.string.storage_legend_free)},
+                    new int[]{COLOR_RAM_USED, COLOR_FREE}), lp(ROW_GAP));
         }
         content.addView(note(R.string.storage_note), lp(12));
     }
 
-    private void addRaw(String title, String value) {
-        content.addView(row(null, title, value, 0, null, 0), lp(ROW_GAP));
+    /** Card com a linha de texto e o percentual, a barra e a legenda com as cores. */
+    private View usageCard(String info, int pct, UsageBar bar, String[] names, int[] colors) {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(Design.px(18), Design.px(16), Design.px(18), Design.px(16));
+        card.setBackground(Design.rect(Design.GLASS, 22));
+
+        LinearLayout top = new LinearLayout(this);
+        top.setOrientation(LinearLayout.HORIZONTAL);
+        top.setGravity(Gravity.CENTER_VERTICAL);
+        TextView infoView = text(info, Design.TEXT, 22, Design.FONT_INTER_SEMIBOLD);
+        infoView.setSingleLine(true);
+        infoView.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        top.addView(infoView, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        top.addView(text(pct + "%", Design.TEXT, 28, Design.FONT_SERIF_SEMIBOLD),
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        card.addView(top, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        LinearLayout.LayoutParams barLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, Design.px(26));
+        barLp.topMargin = Design.px(14);
+        card.addView(bar, barLp);
+
+        LinearLayout legend = new LinearLayout(this);
+        legend.setOrientation(LinearLayout.HORIZONTAL);
+        legend.setPadding(0, Design.px(12), 0, 0);
+        for (int i = 0; i < names.length; i++) {
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            if (i > 0) {
+                lp.leftMargin = Design.px(20);
+            }
+            legend.addView(legendItem(colors[i], names[i]), lp);
+        }
+        card.addView(legend, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        return card;
     }
 
-    private String valueOr(String value) {
-        return value != null ? value : getString(R.string.dev_unavailable);
+    private View legendItem(int color, String name) {
+        LinearLayout item = new LinearLayout(this);
+        item.setOrientation(LinearLayout.HORIZONTAL);
+        item.setGravity(Gravity.CENTER_VERTICAL);
+        View dot = new View(this);
+        dot.setBackground(Design.oval(color));
+        item.addView(dot, new LinearLayout.LayoutParams(Design.px(16), Design.px(16)));
+        TextView label = text(name, Design.TEXT_DIM, 18, Design.FONT_INTER_MEDIUM);
+        LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        tl.leftMargin = Design.px(8);
+        item.addView(label, tl);
+        return item;
     }
 
     private void pickDate() {

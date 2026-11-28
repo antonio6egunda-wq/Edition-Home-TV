@@ -13,9 +13,8 @@ import java.util.Set;
 
 /**
  * RAM e armazenamento lidos direto do kernel: /proc/meminfo, /proc/partitions,
- * /proc/mounts e statfs. Não usa as informações que o firmware mostra nas configurações
- * (ActivityManager, Build, props), então um firmware que informa valores falsos
- * não altera o que aparece aqui.
+ * /proc/mounts e statfs. Não usa as informações que o firmware mostra nas configurações,
+ * então um firmware que informa valores falsos não altera o que aparece aqui.
  */
 public final class RealStorage {
 
@@ -43,7 +42,7 @@ public final class RealStorage {
         }
     }
 
-    /** Tipos de sistema de arquivos de armazenamento real (ignora tmpfs, sdcardfs, fuse, proc...). */
+    /** Sistemas de arquivos de armazenamento real (ignora tmpfs, sdcardfs, fuse, proc...). */
     private static final String[] BLOCK_FS = {"ext2", "ext3", "ext4", "f2fs", "vfat", "exfat", "ntfs", "fuseblk"};
 
     private RealStorage() {
@@ -105,7 +104,7 @@ public final class RealStorage {
                 }
             }
         } catch (IOException ignored) {
-            // sem acesso a /proc/partitions: a lista fica vazia
+            // sem acesso a /proc/partitions: lista vazia
         }
         return out;
     }
@@ -148,25 +147,68 @@ public final class RealStorage {
         return false;
     }
 
-    /** Armazenamento em base 1000 (como os fabricantes): GB ou MB. Null se zero. */
-    public static String format(long bytes) {
-        if (bytes <= 0) {
-            return null;
+    /**
+     * Uso do armazenamento interno como um cálculo só: {total, usado, sdcard}.
+     * total = tamanho do disco principal; usado = soma do uso nas partições desse disco;
+     * sdcard = uso do armazenamento do usuário (o caminho sdPath, ex.: /storage/emulated/0).
+     * Se nenhuma partição puder ser ligada ao disco principal, usa a soma das partições montadas.
+     */
+    public static long[] internalUsage(String sdPath) {
+        List<Disk> disks = disks();
+        List<Partition> parts = partitions();
+        Disk main = null;
+        for (Disk d : disks) {
+            if (main == null || d.bytes > main.bytes) {
+                main = d;
+            }
         }
-        if (bytes >= 1000000000L) {
-            return String.format(Locale.US, "%.1f GB", bytes / 1e9);
+        long mainUsed = 0;
+        long allUsed = 0;
+        long allTotal = 0;
+        for (Partition p : parts) {
+            long used = Math.max(0, p.total - p.free);
+            allUsed += used;
+            allTotal += p.total;
+            if (main != null && p.device.matches(".*/" + main.name + "(p?\\d+)?$")) {
+                mainUsed += used;
+            }
         }
-        return String.format(Locale.US, "%.0f MB", bytes / 1e6);
+        long total;
+        long used;
+        if (main != null && mainUsed > 0) {
+            total = main.bytes;
+            used = Math.min(mainUsed, main.bytes);
+        } else {
+            total = allTotal;
+            used = allUsed;
+        }
+        long sdcard = 0;
+        try {
+            StatFs fs = new StatFs(sdPath);
+            sdcard = Math.max(0, fs.getTotalBytes() - fs.getAvailableBytes());
+        } catch (IllegalArgumentException ignored) {
+            // caminho do sdcard sem leitura
+        }
+        sdcard = Math.min(sdcard, used);
+        return new long[]{total, used, sdcard};
     }
 
-    /** RAM em base 1024 (como o sistema): GB ou MB. Null se zero. */
-    public static String formatBinary(long bytes) {
-        if (bytes <= 0) {
-            return null;
+    /** Tamanho com a unidade que cabe: GB, MB ou KB. binary = base 1024 (RAM), senão base 1000. */
+    public static String human(long bytes, boolean binary) {
+        double base = binary ? 1024.0 : 1000.0;
+        double v = Math.max(0, bytes);
+        if (v >= base * base * base) {
+            return String.format(Locale.US, "%.1f GB", v / (base * base * base));
         }
-        if (bytes >= 1073741824L) {
-            return String.format(Locale.US, "%.1f GB", bytes / 1073741824.0);
+        if (v >= base * base) {
+            return String.format(Locale.US, "%.1f MB", v / (base * base));
         }
-        return String.format(Locale.US, "%.0f MB", bytes / 1048576.0);
+        return String.format(Locale.US, "%.0f KB", v / base);
+    }
+
+    /** Formata bytes em GB com as casas decimais pedidas. binary = base 1024 (RAM), senão base 1000. */
+    public static String gb(long bytes, boolean binary, int decimals) {
+        double value = bytes / (binary ? 1073741824.0 : 1000000000.0);
+        return String.format(Locale.US, "%." + decimals + "f GB", value);
     }
 }

@@ -190,6 +190,12 @@
     <string name="storage_disks">Dispositivos de armazenamento</string>
     <string name="storage_parts">Partições montadas</string>
     <string name="storage_note">Valores lidos direto do kernel (/proc e leitura das partições), sem usar as informações do firmware.</string>
+    <string name="storage_device">Armazenamento do dispositivo</string>
+    <string name="storage_used_of">%1$s utilizados de %2$s</string>
+    <string name="storage_legend_system">Sistema</string>
+    <string name="storage_legend_used">sdcard/0</string>
+    <string name="storage_legend_free">Restante</string>
+    <string name="storage_legend_ram">Utilizada</string>
     <string name="clock_date">%1$d de %2$s de %3$d</string>
     <string name="net_location_settings">Abrir configurações de localização</string>
 
